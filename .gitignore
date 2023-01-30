@@ -1,0 +1,10 @@
+venv
+.idea
+.env
+dump.rdb
+test.py
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+data
