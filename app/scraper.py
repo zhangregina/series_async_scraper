@@ -66,6 +66,17 @@ class RezkaSeriesScraper:
         # print(mongo_data)
         # await self.mongo_database.add_to_log_collection(log_objects=mongo_data)
 
+        postgresql_data = RezkaSeriesModel(
+            current_url=url,
+            title=title,
+            release_year=release_year,
+            country=country,
+            genre=genre,
+            age_group=age_group,
+            duration=duration,
+            image=image,
+        )
+        self.database.add_series(objects=postgresql_data)
 
     async def main(self):
         await self.get_all_pages()
