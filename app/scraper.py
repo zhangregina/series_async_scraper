@@ -3,7 +3,9 @@ import asyncio
 import httpx
 from config import DEFAULT_HEADERS
 from mongo_db.mongo_database import Mongo_DB
-
+from db.models import RezkaSeriesModel
+from db.database import Database
+from async_redis.redis_db import Redis_DB
 
 class RezkaSeriesScraper:
     MAIN_URL = "https://rezka.ag/series/thriller/page/{}/"
@@ -20,7 +22,10 @@ class RezkaSeriesScraper:
     def __init__(self):
         self.all_pages = []
         self.all_urls = []
+        self.redis_data = []
+        self.redis_database = Redis_DB()
         self.mongo_database = Mongo_DB()
+        self.database = Database()
 
     async def get_all_pages(self):
         for i in range(1, 2):
@@ -54,24 +59,13 @@ class RezkaSeriesScraper:
         duration = tree.xpath(self.DURATION).extract_first()
         image = tree.xpath(self.IMAGE).extract_first()
 
-        serial_data = {
+        mongo_data = Mongo_DB.log_collection = {
             "current url": url,
-            "title": title,
-            "release year": release_year,
-            "country": country,
-            "genre": genre,
-            "age group": age_group,
-            "duration": duration,
-            "image": image,
+            "date": Mongo_DB.log_collection.get("date"),
         }
-        print(serial_data)
-
-        # mongo_data = Mongo_DB.log_collection = {
-        #     "current url": url,
-        #     "date": Mongo_DB.log_collection.get("date"),
-        # }
         # print(mongo_data)
         # await self.mongo_database.add_to_log_collection(log_objects=mongo_data)
+
 
     async def main(self):
         await self.get_all_pages()
