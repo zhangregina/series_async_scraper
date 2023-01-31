@@ -7,6 +7,7 @@ from db.models import RezkaSeriesModel
 from db.database import Database
 from async_redis.redis_db import Redis_DB
 
+
 class RezkaSeriesScraper:
     MAIN_URL = "https://rezka.ag/series/thriller/page/{}/"
     SERIAL_URL = '//div[@class="b-content__inline_item-cover"]/a/@href'
@@ -77,6 +78,13 @@ class RezkaSeriesScraper:
             image=image,
         )
         self.database.add_series(objects=postgresql_data)
+
+        redis_data = Redis_DB.redis_url_data = {
+            "url": url,
+            "date": Redis_DB.redis_url_data.get("date"),
+        }
+        print(redis_data)
+        await self.redis_database.add_to_redis_db(redis_objects=redis_data)
 
     async def main(self):
         await self.get_all_pages()
