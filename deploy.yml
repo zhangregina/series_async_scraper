@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  postgres: # имя сервиса
+    container_name: postgres
+    image: postgres:13
+    restart: always # может упасть контейнер из-за плохое соединение с докерхаб, неправильные команды в докеркомпозе и.т.д.
+    volumes:
+      - ./data-postgres:/var/lib/postgresql/data # чтоб все volumes были в этом проекте, добавить в gitignore
+    ports:
+      - "5454:5454" # внешний порт: внутренний порт
+    environment:
+      POSTGRES_DB: rezka_db
+      POSTGRES_NAME: postgres
+      POSTGRES_PASSWORD: drftghjkm2345
+
+  mongo_db: # имя сервиса
+    container_name: mongo-db
+    image: mongo:5.0
+    restart: always # может упасть контейнер из-за плохое соединение с докерхаб, неправильные команды в докеркомпозе и.т.д.
+    volumes:
+      - './data:/data/db'
+    ports:
+      - "27017:27017" # внешний порт: внутренний порт
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: zhangregina
+      MONGO_INITDB_ROOT_PASSWORD: mongodbzhregina

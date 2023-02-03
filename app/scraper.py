@@ -77,7 +77,7 @@ class RezkaSeriesScraper:
             duration=duration,
             image=image,
         )
-        self.database.add_series(objects=postgresql_data)
+        # self.database.add_series(objects=postgresql_data)
 
         redis_data = Redis_DB.redis_url_data = {
             "url": url,
