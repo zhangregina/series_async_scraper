@@ -26,3 +26,13 @@ services:
       MONGO_INITDB_ROOT_USERNAME: zhangregina
       MONGO_INITDB_ROOT_PASSWORD: mongodbzhregina
 
+  redis:
+    container_name: redis
+    restart: always
+    image: redis:latest
+    command: redis-server --requirepass akdjcn;aj12389
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - "6379:6364"
+
