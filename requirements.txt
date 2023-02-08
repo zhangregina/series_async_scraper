@@ -4,6 +4,7 @@ amqp==5.1.1
 anyio==3.6.2
 asgiref==3.6.0
 async-timeout==4.0.2
+asyncio==3.4.3
 billiard==3.6.4.0
 black==22.12.0
 celery==5.2.7
@@ -22,6 +23,7 @@ django-timezone-field==5.0
 dnspython==2.2.1
 filelock==3.9.0
 greenlet==2.0.1
+gunicorn==20.1.0
 h11==0.14.0
 hiredis==2.1.0
 httpcore==0.16.3

@@ -3,36 +3,88 @@ version: "3"
 services:
   postgres: # имя сервиса
     container_name: postgres
-    image: postgres:13
+    image: postgres:13-alpine # укороченная версия postgres
     restart: always # может упасть контейнер из-за плохое соединение с докерхаб, неправильные команды в докеркомпозе и.т.д.
     volumes:
       - ./data-postgres:/var/lib/postgresql/data # чтоб все volumes были в этом проекте, добавить в gitignore
     ports:
-      - "5454:5454" # внешний порт: внутренний порт
+      - "5432:5432" # внешний порт: внутренний порт
     environment:
       POSTGRES_DB: rezka_db
       POSTGRES_NAME: postgres
       POSTGRES_PASSWORD: drftghjkm2345
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    command: redis-server
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - "6379:6379"
 
   mongo_db: # имя сервиса
     container_name: mongo-db
     image: mongo:5.0
     restart: always # может упасть контейнер из-за плохое соединение с докерхаб, неправильные команды в докеркомпозе и.т.д.
     volumes:
-      - './data:/data/db'
+      - ./data:/data/db
     ports:
       - "27017:27017" # внешний порт: внутренний порт
     environment:
       MONGO_INITDB_ROOT_USERNAME: zhangregina
       MONGO_INITDB_ROOT_PASSWORD: mongodbzhregina
 
-  redis:
-    container_name: redis
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: web.Dockerfile
     restart: always
-    image: redis:latest
-    command: redis-server --requirepass akdjcn;aj12389
     volumes:
-      - ./redis-data:/data
+      - .:/app
+    env_file:
+      - .env
     ports:
-      - "6379:6364"
+      - "8000:8000"
+    depends_on:
+      - redis
+      - postgres
+
+  nginx: # отображает statics files
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    restart: always
+    volumes: #volumes до портов
+      - ./static:/static
+    ports:
+      - "7788:80"
+    depends_on:
+      - web
+
+  celery_worker:
+    container_name: celery_worker
+    build:
+      context: .
+    command: celery -A main worker --loglevel=info # celery -A main worker 100 --loglevel=info
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+
+  celery-beat:
+    container_name: celery_beat
+    build:
+      context: .
+    command: celery -A main beat --loglevel=info
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+
+
+#docker-compose всегда откроет первым postgres и redis, потому что сами написали на чем depends, куда бы ты его не написала
 
